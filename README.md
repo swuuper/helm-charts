@@ -1,5 +1,7 @@
 # Helm Charts from swuuper
 
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/swuuper-github)](https://artifacthub.io/packages/search?repo=swuuper-github)
+
 The code is provided as-is with no warranties.
 
 ## Usage
