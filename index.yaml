@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  stash:
+  - apiVersion: v2
+    appVersion: v0.27.2
+    created: "2025-03-15T15:24:18.551791429Z"
+    description: An organizer for your porn, written in Go.
+    digest: 7b8658f007da87a9798dfdd54d94d7d811cdfa7093d73b4f97e5a547219753d1
+    name: stash
+    type: application
+    urls:
+    - https://github.com/swuuper/helm-charts/releases/download/stash-0.1.0/stash-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-03-15T15:24:18.551796799Z"
