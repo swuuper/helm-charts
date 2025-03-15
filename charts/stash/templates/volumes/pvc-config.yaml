@@ -1,0 +1,20 @@
+{{- if .Values.persistence.enabled -}}
+{{- range $name, $data := .Values.persistence.volumes }}
+{{- if not $data.existingClaim }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "stash.fullname" $ }}-{{ $name }}
+spec:
+  accessModes:
+    - {{ $data.accessMode }}
+  resources:
+    requests:
+      storage: {{ $data.size }}
+  {{- with $data.storageClass }}
+  storageClassName: {{ . }}
+  {{- end }}
+{{- end}}
+{{- end }}
+{{- end }}

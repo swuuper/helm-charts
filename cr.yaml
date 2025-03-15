@@ -1,0 +1,3 @@
+cat <<EOF | kubectl -n victoria-metrics apply -f -
+
+EOF
