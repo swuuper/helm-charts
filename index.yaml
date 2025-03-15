@@ -3,6 +3,17 @@ entries:
   stash:
   - apiVersion: v2
     appVersion: v0.27.2
+    created: "2025-03-15T15:59:18.079016349Z"
+    description: An organizer for your porn, written in Go.
+    digest: 4357acd97f60f94f624b944138d59fad6758f53a4377b6ae1d5759151c707a05
+    icon: stash-logo.png
+    name: stash
+    type: application
+    urls:
+    - https://github.com/swuuper/helm-charts/releases/download/stash-0.1.2/stash-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: v0.27.2
     created: "2025-03-15T15:28:01.78857778Z"
     description: An organizer for your porn, written in Go.
     digest: d63192021d46fe9c3b7f042ab6e5d51dc4b63ff1e8feb12ea9525280fe27e4e5
@@ -22,4 +33,4 @@ entries:
     urls:
     - https://github.com/swuuper/helm-charts/releases/download/stash-0.1.0/stash-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-15T15:28:01.788589623Z"
+generated: "2025-03-15T15:59:18.07903277Z"
