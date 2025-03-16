@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "stash-box.fullname" . }}
   labels:
@@ -56,14 +56,12 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-      {{- with .Values.volumes }}
-      volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+            - name: {{ include "stash-box.fullname" . }}-data
+              mountPath: /root/.stash-box
+              {{- if not .Values.persistence.enabled}}
+              emptyDir: {}
+              {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -76,3 +74,17 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+  {{- if .Values.persistence.enabled}}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "stash-box.fullname" . }}-data
+      spec:
+        accessModes:
+          - {{ .Values.persistence.volumes.config.accessMode }}
+        {{- with .Values.persistence.volumes.config.storageClass }}
+        storageClassName: {{ . }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.volumes.config.size }}
+  {{- end }}
