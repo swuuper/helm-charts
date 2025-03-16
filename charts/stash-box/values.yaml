@@ -118,6 +118,7 @@ volumeMounts: []
 #   readOnly: true
 
 nodeSelector: {}
+# kubernetes.io/arch: amd64 # In case you have a mixed cluster of ARM and AMD64 worker nodes
 
 tolerations: []
 
