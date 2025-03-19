@@ -7,12 +7,13 @@ replicaCount: 1
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
-  registry: docker.io
-  repository: stashapp/stash-box
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  # On latest for now as there are no tagged releases
-  tag: "latest@sha256:2117a1cd508bb3e367d9754914968bf1aaf29df3dc46313a56c135612286f01c"
+  box:
+    registry: docker.io
+    repository: stashapp/stash-box
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    # On latest for now as there are no tagged releases
+    tag: "latest@sha256:2117a1cd508bb3e367d9754914968bf1aaf29df3dc46313a56c135612286f01c"
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
@@ -111,6 +112,20 @@ tolerations: []
 
 affinity: {}
 
+postgres:
+  enabled: false
+  credentials: null
+#    username: sbox-user
+#    usernameFromSecret:
+#       name: box.box-db.credentials.postgresql.acid.zalan.do
+#       key: username
+#    passwordFromSecret:
+#       name: box.box-db.credentials.postgresql.acid.zalan.do
+#       key: password
+#    password: myS3cureP4a55word
+#    hostname: sbox-db
+#    database: sbox
+
 persistence:
   enabled: true
   volumes:
@@ -119,3 +134,56 @@ persistence:
       size: 8Gi
       accessMode: ReadWriteOnce
       # storageClass: ''
+      location: /root/.stash-box
+
+configuration:
+  secrets:
+    jwt: null
+    session: null
+  enabled: true
+  override: false
+  # Init script for Box, it will create the required configuration to
+  # connect to the Postgres Database.
+  # Will only be used when `configuration.enabled` is set to true
+  initScript: |-
+    #!/bin/bash
+    set -e
+    
+    echo $POSTGRES_USER
+    echo $POSTGRES_PASSWORD
+
+
+    # Check if the configuration file exists {{ .Values.configuration.override }}
+    {{- if not .Values.configuration.override }}
+    if [ ! -f {{ .Values.persistence.volumes.config.location }}/stash-box-config.yml ]; then
+    {{- end }}
+      echo "Configuration file not found, creating a new one in {{ .Values.persistence.volumes.config.location }}/stash-box-config.yml"
+      mkdir -p {{ .Values.persistence.volumes.config.location }}
+      cp /templates/stash-box-config.yml {{ .Values.persistence.volumes.config.location }}/stash-box-config.yml.source
+      echo "Copied config file, filling environment variables"
+      while IFS= read -r line; do eval "echo \"$line\""; done < {{ .Values.persistence.volumes.config.location }}/stash-box-config.yml.source > {{ .Values.persistence.volumes.config.location }}/stash-box-config.yml
+    {{- if not .Values.configuration.override }}
+    fi
+    {{- end }}
+    
+    echo "Init script done."
+
+  templateConfig: |
+    database: ${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_DATABASE}
+    jwt_secret_key: ${SECRET_JWT_KEY}
+    session_store_key: ${SECRET_SESSION_STORE}
+
+  initContainer:
+    name: create-config
+    image: mikefarah/yq:4
+    securityContext:
+      runAsUser: 0
+    command: [ "/bin/sh", "-c" ]
+    args:
+      - /bin/sh /mnt/init/init.sh
+    volumeMounts:
+      - name: init
+        mountPath: /mnt/init/init.sh
+        subPath: init.sh
+      - name: templates
+        mountPath: /templates

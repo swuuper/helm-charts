@@ -38,8 +38,9 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.image.box.repository }}:{{ .Values.image.box.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.box.pullPolicy }}
+          {{ include "stash-box.environment" . | nindent 10 }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
@@ -62,6 +63,37 @@ spec:
               {{- if not .Values.persistence.enabled}}
               emptyDir: {}
               {{- end }}
+      {{- if .Values.configuration.enabled}}
+      initContainers:
+        {{- if .Values.configuration.enabled }}
+        - name: {{ .Values.configuration.initContainer.name }}
+          image: {{ .Values.configuration.initContainer.image }}
+          {{- if .Values.configuration.initContainer.securityContext }}
+          securityContext:
+            {{- toYaml .Values.configuration.initContainer.securityContext | nindent 12 }}
+          {{- end }}
+          {{- if .Values.configuration.initContainer.command }}
+          command: {{ toYaml .Values.configuration.initContainer.command | nindent 12 }}
+          {{- end }}
+          {{- if .Values.configuration.initContainer.args }}
+          args: {{ toYaml .Values.configuration.initContainer.args | nindent 12 }}
+          {{- end }}
+          {{ include "stash-box.environment" . | nindent 10 }}
+          volumeMounts:
+            - name: {{ include "stash-box.fullname" . }}-data
+              mountPath: /root/.stash-box
+              {{- if not .Values.persistence.enabled}}
+              emptyDir: {}
+              {{- end }}
+            {{- range .Values.configuration.initContainer.volumeMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+              {{- if .subPath }}
+              subPath: {{ .subPath }}
+              {{ end }}
+            {{- end }}
+        {{- end }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -74,6 +106,15 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        {{- if .Values.configuration.enabled }}
+        - name: init
+          configMap:
+            name: init
+        - name: templates
+          configMap:
+            name: templates
+        {{- end }}
   {{- if .Values.persistence.enabled}}
   volumeClaimTemplates:
     - metadata:

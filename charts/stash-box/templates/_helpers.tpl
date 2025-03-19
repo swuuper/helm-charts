@@ -60,3 +60,41 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "stash-box.environment" -}}
+env:
+  {{- with .env }}
+  {{ toYaml . | nindent 2 }}
+  {{- end }}
+  {{- if .Values.postgres.credentials }}
+  - name: POSTGRES_USER
+  {{- if .Values.postgres.credentials.usernameFromSecret }}
+    valueFrom:
+      secretKeyRef:
+        name: {{ .Values.postgres.credentials.usernameFromSecret.name }}
+        key: {{ .Values.postgres.credentials.usernameFromSecret.key }}
+  {{- else }}
+    value: {{ .Values.postgres.credentials.username | quote }}
+  {{- end }}
+  - name: POSTGRES_PASSWORD
+    {{- if .Values.postgres.credentials.passwordFromSecret }}
+    valueFrom:
+      secretKeyRef:
+        name: {{ .Values.postgres.credentials.passwordFromSecret.name }}
+        key: {{ .Values.postgres.credentials.passwordFromSecret.key }}
+    {{- else }}
+    value: {{ .Values.postgres.credentials.password | quote }}
+    {{- end }}
+  - name: POSTGRES_HOST
+    value: {{ .Values.postgres.credentials.hostname | quote }}
+  - name: POSTGRES_DATABASE
+    value: {{ .Values.postgres.credentials.database | quote }}
+  {{- end }}
+  - name: SECRET_JWT_KEY
+    value: {{ .Values.configuration.secrets.jwt | quote }}
+  - name: SECRET_SESSION_STORE
+    value: {{ .Values.configuration.secrets.session | quote }}
+{{- end }}
