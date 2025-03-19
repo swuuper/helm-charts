@@ -1,7 +1,7 @@
 apiVersion: v2
 name: stash
 description: An organizer for your porn, written in Go.
-icon: stash-logo.png
+icon: https://raw.githubusercontent.com/swuuper/helm-charts/refs/heads/main/charts/stash/stash-logo.png
 
 # A chart can be either an 'application' or a 'library' chart.
 #
