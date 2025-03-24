@@ -11,7 +11,7 @@ image:
   repository: stashapp/stash
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.28.0@sha256:07058d41fc0089e49ab7e2bfd9789e27e1de1cc0502f5eb5cca6eb8a112471f7"
+  tag: "v0.28.1@sha256:645f6c15b079410d50d488dbeb247c92f25534094dad4e15d886e47648b897f7"
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
