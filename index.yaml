@@ -68,6 +68,17 @@ entries:
     version: 0.1.0
   stash-box:
   - apiVersion: v2
+    appVersion: v0.6.16
+    created: "2025-06-24T20:22:12.097828767Z"
+    description: Stash App's own OpenSource video indexing and Perceptual Hashing
+      MetaData API
+    digest: 221533680b98ee882916fa52667a8abaeafa894a827ab2e7b56a21f99203df32
+    name: stash-box
+    type: application
+    urls:
+    - https://github.com/swuuper/helm-charts/releases/download/stash-box-0.1.1/stash-box-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: v0.6.10
     created: "2025-03-19T14:15:50.398582693Z"
     description: Stash App's own OpenSource video indexing and Perceptual Hashing
@@ -78,4 +89,4 @@ entries:
     urls:
     - https://github.com/swuuper/helm-charts/releases/download/stash-box-0.1.0/stash-box-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-24T22:33:20.049972412Z"
+generated: "2025-06-24T20:22:12.097850457Z"
