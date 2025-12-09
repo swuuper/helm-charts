@@ -22,10 +22,10 @@ version: 0.1.8
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "v0.29.1"
+appVersion: "v0.29.3"
 
 annotations:
   # Supported kind: added, changed, deprecated, removed, fixed and security
   artifacthub.io/changes: |
     - kind: changed
-      description: "Added deployment strategy and set to Recreate to prevent PVC contention during updates"
+      description: "Update the app version"
