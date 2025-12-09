@@ -3,6 +3,21 @@ entries:
   stash:
   - annotations:
       artifacthub.io/changes: |-
+        - kind: changed
+          description: "Added deployment strategy and set to Recreate to prevent PVC contention during updates"
+    apiVersion: v2
+    appVersion: v0.29.1
+    created: "2025-12-09T21:52:02.873687838Z"
+    description: 'Stashapp: An organizer for your porn, written in Go.'
+    digest: 3bb87577a2254c692da15ef123f14f1eaaa186fce1683a433885e58d7e6fe1bc
+    icon: https://raw.githubusercontent.com/swuuper/helm-charts/refs/heads/main/charts/stash/stash-logo.png
+    name: stash
+    type: application
+    urls:
+    - https://github.com/swuuper/helm-charts/releases/download/stash-0.1.8/stash-0.1.8.tgz
+    version: 0.1.8
+  - annotations:
+      artifacthub.io/changes: |-
         - kind: security
           description: "Updated StashApp Version."
     apiVersion: v2
@@ -119,4 +134,4 @@ entries:
     urls:
     - https://github.com/swuuper/helm-charts/releases/download/stash-box-0.1.0/stash-box-0.1.0.tgz
     version: 0.1.0
-generated: "2025-10-25T10:55:21.707376474Z"
+generated: "2025-12-09T21:52:02.873736619Z"
