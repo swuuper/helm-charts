@@ -3,6 +3,21 @@ entries:
   stash:
   - annotations:
       artifacthub.io/changes: |-
+        - kind: fixed
+          description: "Add toYaml"
+    apiVersion: v2
+    appVersion: v0.29.3
+    created: "2025-12-09T22:00:44.924225788Z"
+    description: 'Stashapp: An organizer for your porn, written in Go.'
+    digest: 0e3b6803ee1c674a826869fee3dcb8a58f2d098739e95c8b227017c62ed72934
+    icon: https://raw.githubusercontent.com/swuuper/helm-charts/refs/heads/main/charts/stash/stash-logo.png
+    name: stash
+    type: application
+    urls:
+    - https://github.com/swuuper/helm-charts/releases/download/stash-0.1.9/stash-0.1.9.tgz
+    version: 0.1.9
+  - annotations:
+      artifacthub.io/changes: |-
         - kind: changed
           description: "Added deployment strategy and set to Recreate to prevent PVC contention during updates"
     apiVersion: v2
@@ -134,4 +149,4 @@ entries:
     urls:
     - https://github.com/swuuper/helm-charts/releases/download/stash-box-0.1.0/stash-box-0.1.0.tgz
     version: 0.1.0
-generated: "2025-12-09T21:52:02.873736619Z"
+generated: "2025-12-09T22:00:44.924282124Z"
