@@ -127,6 +127,9 @@ config:
     cache: '/cache/'
     config: '/root/.stash/'
 
+strategy:
+  type: Recreate
+
 # Define additional volume mounts
 extraVolumeMounts: []
 #  - mountPath: /mnt/content
