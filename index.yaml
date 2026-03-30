@@ -2,6 +2,21 @@ apiVersion: v1
 entries:
   stash:
   - annotations:
+      artifacthub.io/changes: |
+        - kind: changed
+          description: "Updated stash version"
+    apiVersion: v2
+    appVersion: v0.31.0
+    created: "2026-03-30T09:50:52.878046793Z"
+    description: 'Stashapp: An organizer for your porn, written in Go.'
+    digest: cf63f85f54afee4350eae1ddd2b660d12f0067033c0c0658e33ae4dabd48e57b
+    icon: https://raw.githubusercontent.com/swuuper/helm-charts/refs/heads/main/charts/stash/stash-logo.png
+    name: stash
+    type: application
+    urls:
+    - https://github.com/swuuper/helm-charts/releases/download/stash-0.1.12/stash-0.1.12.tgz
+    version: 0.1.12
+  - annotations:
       artifacthub.io/changes: |-
         - kind: changed
           description: "Updated stash version"
@@ -179,4 +194,4 @@ entries:
     urls:
     - https://github.com/swuuper/helm-charts/releases/download/stash-box-0.1.0/stash-box-0.1.0.tgz
     version: 0.1.0
-generated: "2025-12-18T20:08:25.116522515Z"
+generated: "2026-03-30T09:50:52.878141369Z"
