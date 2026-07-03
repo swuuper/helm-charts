@@ -4,6 +4,21 @@ entries:
   - annotations:
       artifacthub.io/changes: |
         - kind: added
+          description: "Optional ingress.pluginMimeFix to force text/javascript Content-Type for plugin JS assets (ingress-nginx)"
+    apiVersion: v2
+    appVersion: v0.31.1
+    created: "2026-07-03T23:28:01.440640755Z"
+    description: 'Stashapp: An organizer for your porn, written in Go.'
+    digest: e8b1f637134906d85aa71a519d9b2ed62383057408c46bbc478f05b90ea4b880
+    icon: https://raw.githubusercontent.com/swuuper/helm-charts/refs/heads/main/charts/stash/stash-logo.png
+    name: stash
+    type: application
+    urls:
+    - https://github.com/swuuper/helm-charts/releases/download/stash-0.1.15/stash-0.1.15.tgz
+    version: 0.1.15
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: added
           description: "Support for configuring plugins"
     apiVersion: v2
     appVersion: v0.31.1
@@ -224,4 +239,4 @@ entries:
     urls:
     - https://github.com/swuuper/helm-charts/releases/download/stash-box-0.1.0/stash-box-0.1.0.tgz
     version: 0.1.0
-generated: "2026-07-03T23:15:00.581044805Z"
+generated: "2026-07-03T23:28:01.440773924Z"
