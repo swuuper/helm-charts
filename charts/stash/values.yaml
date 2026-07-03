@@ -63,6 +63,22 @@ ingress:
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
+  # Workaround for Stash serving plugin JavaScript assets with
+  # Content-Type: text/plain. Browsers block ES modules served that way
+  # (X-Content-Type-Options: nosniff), which breaks "app"-style plugins such as
+  # stashGifs. When enabled, an ingress-nginx configuration-snippet forces the
+  # Content-Type for matching plugin asset paths.
+  #
+  # NOTE: only works with the ingress-nginx controller, and requires the
+  # controller to allow snippet annotations (`allow-snippet-annotations: "true"`
+  # in its ConfigMap; disabled by default since ingress-nginx v1.9). Do not also
+  # set nginx.ingress.kubernetes.io/configuration-snippet in annotations above,
+  # or the two will collide.
+  pluginMimeFix:
+    enabled: false
+    contentType: text/javascript
+    # Case-insensitive regex matched against $uri (nginx `~*`).
+    pathPattern: '^/plugin/.*\.(js|mjs)$'
   hosts:
     - host: chart-example.local
       paths:
