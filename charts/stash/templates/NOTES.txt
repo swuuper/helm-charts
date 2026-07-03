@@ -20,3 +20,18 @@
   echo "Visit http://127.0.0.1:8080 to use your application"
   kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
 {{- end }}
+
+2. Plugins:
+{{- if .Values.persistence.enabled }}
+   Plugins live in {{ .Values.config.directories.config | trimSuffix "/" }}/plugins on the persistent config
+   volume, so plugins installed via Settings -> Plugins persist across restarts.
+{{- else }}
+   WARNING: persistence.enabled is false, so plugins installed via the UI will be
+   lost when the pod restarts. Enable persistence to keep them.
+{{- end }}
+{{- if and .Values.plugins.enabled .Values.plugins.sources }}
+   An init container provisions the following plugin source(s) on startup:
+   {{- range .Values.plugins.sources }}
+     - {{ .name }} ({{ .repo }})
+   {{- end }}
+{{- end }}

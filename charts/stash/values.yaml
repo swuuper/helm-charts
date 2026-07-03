@@ -127,6 +127,37 @@ config:
     cache: '/cache/'
     config: '/root/.stash/'
 
+# Plugins
+#
+# Stash plugins live in a `plugins/` subdirectory of the config directory
+# (config.directories.config, i.e. /root/.stash/plugins). Because that directory
+# is backed by the persistent `config` volume, any plugin installed from the
+# in-app Plugin Manager (Settings -> Plugins -> Available Plugins) already
+# persists across pod restarts and upgrades. No configuration is required for
+# that workflow.
+#
+# The block below is only needed if you want to provision plugins declaratively
+# at deploy time (GitOps). When enabled, an init container clones each source
+# repository into the plugins directory before Stash starts. Plugins installed
+# this way coexist with UI-installed plugins; only directories matching a source
+# `name` below are managed (recreated) by the init container.
+#
+# NOTE: requires persistence.enabled=true so the config volume exists and is
+# shared between the init container and the main container.
+plugins:
+  enabled: false
+  # Image used by the init container to fetch plugin sources (needs git + sh).
+  image:
+    repository: alpine/git
+    tag: latest
+    pullPolicy: IfNotPresent
+  sources: []
+    # - name: CommunityScripts
+    #   repo: https://github.com/stashapp/CommunityScripts.git
+    #   # branch: main            # optional git branch/tag to clone
+    #   # path: plugins           # optional subdir within the repo to copy;
+    #   #                         # omit to copy the whole repository
+
 strategy:
   type: Recreate
 
