@@ -34,7 +34,7 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if and .Values.plugins.enabled .Values.plugins.sources }}
+      {{- if and .Values.plugins.enabled (or .Values.plugins.repositories .Values.plugins.sources) }}
       initContainers:
         - name: install-plugins
           image: "{{ .Values.plugins.image.repository }}:{{ .Values.plugins.image.tag }}"
@@ -46,15 +46,72 @@ spec:
               set -eu
               PLUGIN_DIR="{{ .Values.config.directories.config | trimSuffix "/" }}/plugins"
               mkdir -p "$PLUGIN_DIR"
+              {{- if .Values.plugins.repositories }}
+              # --- Stash repository sources (index.yml format) ---
+              if ! command -v yq >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then
+                echo "Installing helpers (yq, unzip)..."
+                apk add --no-cache yq unzip >/dev/null
+              fi
+              {{- range $repo := .Values.plugins.repositories }}
+              REPO_URL="{{ $repo.url | trimSuffix "/" }}"
+              case "$REPO_URL" in
+                *.yml|*.yaml) INDEX_URL="$REPO_URL" ;;
+                *)            INDEX_URL="$REPO_URL/index.yml" ;;
+              esac
+              echo "Fetching plugin index: $INDEX_URL"
+              INDEX_FILE="$(mktemp)"
+              wget -qO "$INDEX_FILE" "$INDEX_URL"
+              {{- range $plugin := $repo.plugins }}
+              PLUGIN_ID="{{ $plugin.id }}"
+              {{- if $plugin.delete }}
+              echo "Removing plugin: $PLUGIN_ID"
+              rm -rf "$PLUGIN_DIR/$PLUGIN_ID"
+              {{- else }}
+              echo "Resolving plugin: $PLUGIN_ID"
+              PLUGIN_VERSION="$(PLUGIN_ID="$PLUGIN_ID" yq e '.[] | select(.id == env(PLUGIN_ID)) | .version' "$INDEX_FILE")"
+              PLUGIN_PATH="$(PLUGIN_ID="$PLUGIN_ID" yq e '.[] | select(.id == env(PLUGIN_ID)) | .path' "$INDEX_FILE")"
+              PLUGIN_SHA="$(PLUGIN_ID="$PLUGIN_ID" yq e '.[] | select(.id == env(PLUGIN_ID)) | .sha256' "$INDEX_FILE")"
+              if [ -z "$PLUGIN_PATH" ] || [ "$PLUGIN_PATH" = "null" ]; then
+                echo "ERROR: plugin '$PLUGIN_ID' not found in $INDEX_URL"; exit 1
+              fi
+              {{- with $plugin.version }}
+              if [ "$PLUGIN_VERSION" != "{{ . }}" ]; then
+                echo "ERROR: pinned version '{{ . }}' for '$PLUGIN_ID' does not match index version '$PLUGIN_VERSION'"; exit 1
+              fi
+              {{- end }}
+              echo "Installing $PLUGIN_ID version $PLUGIN_VERSION"
+              ZIP="$(mktemp)"
+              wget -qO "$ZIP" "$PLUGIN_PATH"
+              if [ -n "$PLUGIN_SHA" ] && [ "$PLUGIN_SHA" != "null" ]; then
+                echo "$PLUGIN_SHA  $ZIP" | sha256sum -c - >/dev/null
+              fi
+              DEST="$PLUGIN_DIR/$PLUGIN_ID"
+              rm -rf "$DEST"
+              mkdir -p "$DEST"
+              unzip -o -q "$ZIP" -d "$DEST"
+              rm -f "$ZIP"
+              {{- end }}
+              {{- end }}
+              rm -f "$INDEX_FILE"
+              {{- end }}
+              {{- end }}
+              {{- if .Values.plugins.sources }}
+              # --- Legacy git repository sources ---
               {{- range .Values.plugins.sources }}
+              {{- if .delete }}
+              echo "Removing plugin source: {{ .name }}"
+              rm -rf "$PLUGIN_DIR/{{ .name }}"
+              {{- else }}
               echo "Installing plugin source: {{ .name }}"
               TMP="$(mktemp -d)"
-              git clone --depth 1 {{ with .branch }}--branch {{ . }} {{ end }}{{ .repo }} "$TMP"
+              git clone --depth 1 {{ with (.ref | default .branch) }}--branch {{ . }} {{ end }}{{ .repo }} "$TMP"
               DEST="$PLUGIN_DIR/{{ .name }}"
               rm -rf "$DEST"
               mkdir -p "$DEST"
               cp -a "$TMP/{{ .path | default "." | trimSuffix "/" }}/." "$DEST/"
               rm -rf "$TMP"
+              {{- end }}
+              {{- end }}
               {{- end }}
           volumeMounts:
             - name: {{ include "stash.fullname" . }}-config
