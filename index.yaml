@@ -4,6 +4,23 @@ entries:
   - annotations:
       artifacthub.io/changes: |
         - kind: added
+          description: "plugins.repositories: install plugins from Stash's native index.yml repository format (newest by default, optional version pin, sha256-verified)"
+        - kind: added
+          description: "Per-plugin delete flag (default false) to remove a specific plugin's directory without affecting UI-installed plugins"
+    apiVersion: v2
+    appVersion: v0.31.1
+    created: "2026-07-05T14:01:09.454263772Z"
+    description: 'Stashapp: An organizer for your porn, written in Go.'
+    digest: 8e160b2f080a2529d5db868d3d053db7cb1c88757d74bd17fcb5f066f9ca6245
+    icon: https://raw.githubusercontent.com/swuuper/helm-charts/refs/heads/main/charts/stash/stash-logo.png
+    name: stash
+    type: application
+    urls:
+    - https://github.com/swuuper/helm-charts/releases/download/stash-0.1.16/stash-0.1.16.tgz
+    version: 0.1.16
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: added
           description: "Optional ingress.pluginMimeFix to force text/javascript Content-Type for plugin JS assets (ingress-nginx)"
     apiVersion: v2
     appVersion: v0.31.1
@@ -239,4 +256,4 @@ entries:
     urls:
     - https://github.com/swuuper/helm-charts/releases/download/stash-box-0.1.0/stash-box-0.1.0.tgz
     version: 0.1.0
-generated: "2026-07-03T23:28:01.440773924Z"
+generated: "2026-07-05T14:01:09.454466683Z"
