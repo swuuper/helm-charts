@@ -1,5 +1,24 @@
 apiVersion: v1
 entries:
+  of-dl:
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: added
+          description: "Initial release: run OF-DL non-interactively on a schedule as a CronJob"
+        - kind: added
+          description: "Renders config.conf (HOCON) from values, with configRaw for verbatim passthrough"
+        - kind: added
+          description: "Chart-managed Secret for auth.json and the Widevine CDM device keys, or bring your own via cdm.existingSecret"
+    apiVersion: v2
+    appVersion: 1.10.6
+    created: "2026-08-19T13:56:11.79796829Z"
+    description: 'OF-DL: scheduled OnlyFans downloader, run as a Kubernetes CronJob.'
+    digest: e2a9e1bd4804bcebf6829aa7e36f85beb98e2a58199bfbb5fcd309ae9cadc763
+    name: of-dl
+    type: application
+    urls:
+    - https://github.com/swuuper/helm-charts/releases/download/of-dl-0.1.0/of-dl-0.1.0.tgz
+    version: 0.1.0
   stash:
   - annotations:
       artifacthub.io/changes: |
@@ -256,4 +275,4 @@ entries:
     urls:
     - https://github.com/swuuper/helm-charts/releases/download/stash-box-0.1.0/stash-box-0.1.0.tgz
     version: 0.1.0
-generated: "2026-07-05T14:01:09.454466683Z"
+generated: "2026-08-19T13:56:11.798064517Z"
