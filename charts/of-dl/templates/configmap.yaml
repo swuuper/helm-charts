@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "of-dl.fullname" . }}-config-files
+  labels:
+    {{- include "of-dl.labels" . | nindent 4 }}
+data:
+  config.conf: |-
+{{- if .Values.configRaw }}
+{{ .Values.configRaw | indent 4 }}
+{{- else }}
+{{ include "of-dl.hocon" .Values.config | trim | indent 4 }}
+{{- end }}
+  rules.json: |-
+{{ .Values.rules | toPrettyJson | indent 4 }}

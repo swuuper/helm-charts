@@ -1,0 +1,151 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "of-dl.fullname" . }}-run-download
+  labels:
+    {{- include "of-dl.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.schedule | quote }}
+  concurrencyPolicy: {{ .Values.concurrencyPolicy }}
+  successfulJobsHistoryLimit: {{ .Values.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.failedJobsHistoryLimit }}
+  {{- with .Values.startingDeadlineSeconds }}
+  startingDeadlineSeconds: {{ . }}
+  {{- end }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.backoffLimit }}
+      {{- with .Values.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ . }}
+      {{- end }}
+      template:
+        metadata:
+          labels:
+            {{- include "of-dl.selectorLabels" . | nindent 12 }}
+            cron: run-download
+            {{- with .Values.podLabels }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          annotations:
+            # Roll the pod spec when the rendered config changes, so a values
+            # edit takes effect on the next run instead of silently persisting
+            # the copy already on the PVC.
+            checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+            {{- with .Values.podAnnotations }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+        spec:
+          restartPolicy: {{ .Values.restartPolicy }}
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.podSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          initContainers:
+            # The image's entrypoint only seeds /config when a file is absent, so
+            # config is copied in here on every run to keep the PVC in step with
+            # the chart values. users.db and the logs directory are left alone.
+            - name: init-config
+              image: "{{ .Values.initImage.repository }}:{{ .Values.initImage.tag }}"
+              imagePullPolicy: {{ .Values.initImage.pullPolicy }}
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  mkdir -p /config/logs
+                  cp /config-template/config.conf /config/config.conf
+                  cp /config-template/rules.json /config/rules.json
+                  cp /config-auth/auth.json /config/auth.json
+                  chmod 600 /config/auth.json
+                  # A leftover config.json would shadow config.conf in the
+                  # entrypoint's seeding check.
+                  rm -f /config/config.json
+                  {{- if include "of-dl.hasCdm" . }}
+                  mkdir -p /config/cdm/devices/{{ .Values.cdm.deviceName }}
+                  cp /cdm/device_client_id_blob /config/cdm/devices/{{ .Values.cdm.deviceName }}/device_client_id_blob
+                  cp /cdm/device_private_key /config/cdm/devices/{{ .Values.cdm.deviceName }}/device_private_key
+                  chmod 600 /config/cdm/devices/{{ .Values.cdm.deviceName }}/*
+                  {{- end }}
+              volumeMounts:
+                - name: config
+                  mountPath: /config
+                - name: config-files
+                  mountPath: /config-template
+                - name: config-auth
+                  mountPath: /config-auth
+                {{- if include "of-dl.hasCdm" . }}
+                - name: cdm-keys
+                  mountPath: /cdm
+                {{- end }}
+          containers:
+            - name: run-download
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              {{- with .Values.securityContext }}
+              securityContext:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .Values.command }}
+              command:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .Values.args }}
+              args:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .Values.env }}
+              env:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .Values.envFrom }}
+              envFrom:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .Values.resources }}
+              resources:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              volumeMounts:
+                - name: config
+                  mountPath: /config
+                {{- with .Values.volumeMounts }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumes:
+            - name: config
+            {{- if .Values.persistence.enabled }}
+              persistentVolumeClaim:
+                claimName: {{ include "of-dl.configClaimName" . }}
+            {{- else }}
+              emptyDir: {}
+            {{- end }}
+            - name: config-files
+              configMap:
+                name: {{ include "of-dl.fullname" . }}-config-files
+            - name: config-auth
+              secret:
+                secretName: {{ include "of-dl.fullname" . }}-auth
+            {{- if include "of-dl.hasCdm" . }}
+            - name: cdm-keys
+              secret:
+                secretName: {{ include "of-dl.cdmSecretName" . }}
+            {{- end }}
+            {{- with .Values.volumes }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}

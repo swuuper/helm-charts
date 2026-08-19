@@ -1,0 +1,204 @@
+# Default values for of-dl.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  repository: ghcr.io/sim0n00ps/of-dl
+  # This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+# Image used by the init container that seeds /config before each run.
+initImage:
+  repository: alpine
+  tag: "3.22"
+  pullPolicy: IfNotPresent
+
+# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+#  - name: ghcr
+
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+# CronJob scheduling. OF-DL scrapes for a long time and rate-limits itself, so
+# overlapping runs are never wanted -- keep concurrencyPolicy at Forbid.
+schedule: "0 */2 * * *"
+concurrencyPolicy: Forbid
+successfulJobsHistoryLimit: 3
+failedJobsHistoryLimit: 3
+startingDeadlineSeconds: 300
+# Pod restartPolicy for the job. Never keeps failed attempts around for inspection.
+restartPolicy: Never
+backoffLimit: 0
+# Hard stop for a single run. Null leaves the job to run as long as it needs.
+activeDeadlineSeconds: null
+
+# The image entrypoint seeds /config, brings up supervisord and Xvfb, then strips
+# --cli and execs the CLI binary. Leave `command` empty so the entrypoint runs;
+# setting it bypasses that setup and the app will not start.
+command: []
+args:
+  - "--cli"
+
+env: []
+envFrom: []
+
+# This is for setting Kubernetes Annotations to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+# This is for setting Kubernetes Labels to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Rendered to /config/auth.json. Contains a live session cookie, so the chart
+# puts it in a Secret rather than a ConfigMap.
+auth:
+  USER_ID: "234234234"
+  USER_AGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+  X_BC: 7wer897sdcgvjknsdalftg8093745lnbalkjhdsaf
+  COOKIE: auth_id=234234234; sess=jkahsdf8798as7dkjf;
+
+# Rendered to /config/rules.json.
+# Get these values from https://raw.githubusercontent.com/deviint/onlyfans-dynamic-rules/main/dynamicRules.json
+# Note the key is `app-token` with a hyphen -- that is what the app reads.
+rules:
+  app-token: asdfasdfasdfasdfasdf
+  static_param: qwerqwerqwerqwer
+  prefix: "12345"
+  suffix: "098765"
+  checksum_constant: 234
+  checksum_indexes: [21, 23, 23, 24]
+
+# Rendered to /config/config.conf as HOCON. The nesting below mirrors the
+# sections of the config.conf that ships inside the image; keys are written out
+# verbatim, so any option the app supports can be set here without a chart change.
+config:
+  External:
+    FFmpegPath: ""
+  Download:
+    Media:
+      DownloadAvatarHeaderPhoto: true
+      DownloadPaidPosts: true
+      DownloadPosts: true
+      DownloadArchived: true
+      DownloadStreams: true
+      DownloadStories: true
+      DownloadHighlights: true
+      DownloadMessages: true
+      DownloadPaidMessages: true
+      DownloadImages: true
+      DownloadVideos: true
+      DownloadAudios: true
+    IgnoreOwnMessages: false
+    DownloadPostsIncrementally: true
+    BypassContentForCreatorsWhoNoLongerExist: false
+    DownloadDuplicatedMedia: false
+    SkipAds: false
+    DownloadPath: "/data"
+    DownloadOnlySpecificDates: false
+    DownloadDateSelection: "before"
+    CustomDate: ""
+    ShowScrapeSize: false
+    # Browser-based auth needs an interactive X session; keep it off for CronJob runs.
+    disablebrowserauth: true
+  File:
+    PaidPostFileNameFormat: ""
+    PostFileNameFormat: ""
+    PaidMessageFileNameFormat: ""
+    MessageFileNameFormat: ""
+    RenameExistingFilesWhenCustomFormatIsSelected: false
+  CreatorConfigs: {}
+  Folder:
+    FolderPerPaidPost: false
+    FolderPerPost: false
+    FolderPerPaidMessage: false
+    FolderPerMessage: false
+  Subscriptions:
+    IncludeExpiredSubscriptions: false
+    IncludeRestrictedSubscriptions: false
+    IgnoredUsersListName: ""
+  Interaction:
+    # Must stay true: there is no terminal attached to a CronJob pod.
+    NonInteractiveMode: true
+    NonInteractiveModeListName: ""
+    NonInteractiveModePurchasedTab: false
+  Performance:
+    Timeout: -1
+    LimitDownloadRate: false
+    DownloadLimitInMbPerSec: 10
+  Logging:
+    LoggingLevel: "error"
+
+# Escape hatch: a verbatim config.conf. When set, `config` above is ignored
+# entirely and this string is written to /config/config.conf as-is.
+configRaw: ""
+
+# Widevine CDM device keys, required for DRM-protected media.
+# Values are the base64 of the raw key files from cdm/devices/<device>/, e.g.
+#   base64 -w0 cdm/devices/chrome_1610/device_client_id_blob
+cdm:
+  # Name of a pre-existing Secret with keys `device_client_id_blob` and
+  # `device_private_key`. When set, the values below are ignored.
+  existingSecret: ""
+  deviceName: chrome_1610
+  deviceClientIdBlob: ""
+  devicePrivateKey: ""
+
+# /config persists users.db (incremental download state), logs and the
+# Playwright browser directory between runs.
+persistence:
+  enabled: true
+  existingClaim: ""
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 5Gi
+
+# Additional volumes on the CronJob pod. Mount the download target at whatever
+# path `config.Download.DownloadPath` points to.
+volumes: []
+#  - name: smb-share
+#    csi:
+#      driver: smb.csi.k8s.io
+#      volumeAttributes:
+#        source: //smb-server.default.svc.cluster.local/share  # required
+#        secretName: smbcreds  # required, secretNamespace is the same as the pod
+#        mountOptions: "dir_mode=0777,file_mode=0777,cache=strict,actimeo=30,nosharesock,nobrl,uid=1000,gid=9999" # optional
+
+# Additional volumeMounts on the CronJob pod.
+volumeMounts: []
+#  - name: smb-share
+#    mountPath: "/data"
+#    readOnly: false

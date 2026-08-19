@@ -1,0 +1,25 @@
+apiVersion: v2
+name: of-dl
+description: 'OF-DL: scheduled OnlyFans downloader, run as a Kubernetes CronJob.'
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.1.0
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: "1.10.6"
+
+annotations:
+  # Supported kind: added, changed, deprecated, removed, fixed and security
+  artifacthub.io/changes: |
+    - kind: added
+      description: "Initial release: run OF-DL non-interactively on a schedule as a CronJob"
+    - kind: added
+      description: "Renders config.conf (HOCON) from values, with configRaw for verbatim passthrough"
+    - kind: added
+      description: "Chart-managed Secret for auth.json and the Widevine CDM device keys, or bring your own via cdm.existingSecret"

@@ -1,0 +1,13 @@
+OF-DL is installed as a CronJob running on schedule {{ .Values.schedule | quote }}.
+
+Downloads are written to {{ .Values.config.DownloadPath | default (dig "Download" "DownloadPath" "/data" .Values.config) }} inside the pod -- make sure a volume is
+mounted there via `volumes` / `volumeMounts`, otherwise everything lands on the
+pod's ephemeral filesystem and is lost when the job finishes.
+
+Trigger a run without waiting for the schedule:
+
+  kubectl -n {{ .Release.Namespace }} create job --from=cronjob/{{ include "of-dl.fullname" . }}-run-download {{ include "of-dl.fullname" . }}-manual
+
+Then follow it:
+
+  kubectl -n {{ .Release.Namespace }} logs -f job/{{ include "of-dl.fullname" . }}-manual
