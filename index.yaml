@@ -3,6 +3,20 @@ entries:
   of-dl:
   - annotations:
       artifacthub.io/changes: |
+        - kind: fixed
+          description: "Configuration for OF-DL to work again"
+    apiVersion: v2
+    appVersion: 1.10.6
+    created: "2026-09-14T11:34:39.762300004Z"
+    description: 'OF-DL: scheduled OnlyFans downloader, run as a Kubernetes CronJob.'
+    digest: f561c82e8280aef15ed5b27bb4bceef8daf95f953c9b7c41c16ee0b491cc8ad3
+    name: of-dl
+    type: application
+    urls:
+    - https://github.com/swuuper/helm-charts/releases/download/of-dl-0.1.1/of-dl-0.1.1.tgz
+    version: 0.1.1
+  - annotations:
+      artifacthub.io/changes: |
         - kind: added
           description: "Initial release: run OF-DL non-interactively on a schedule as a CronJob"
         - kind: added
@@ -275,4 +289,4 @@ entries:
     urls:
     - https://github.com/swuuper/helm-charts/releases/download/stash-box-0.1.0/stash-box-0.1.0.tgz
     version: 0.1.0
-generated: "2026-08-19T13:56:11.798064517Z"
+generated: "2026-09-14T11:34:39.762348756Z"
