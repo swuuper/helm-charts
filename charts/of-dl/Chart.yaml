@@ -1,21 +1,21 @@
 apiVersion: v2
 name: of-dl
-description: 'OF-DL: scheduled OnlyFans downloader, run as a Kubernetes CronJob.'
+description: 'SubScraper: scheduled OnlyFans downloader, run as a Kubernetes CronJob. Previously OF-DL'
 type: application
 
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.1
+version: 0.1.2
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "1.10.6"
+appVersion: "1.0.13"
 
 annotations:
   # Supported kind: added, changed, deprecated, removed, fixed and security
   artifacthub.io/changes: |
     - kind: fixed
-      description: "Configuration for OF-DL to work again"
+      description: "Update SubScraper repository and version"
