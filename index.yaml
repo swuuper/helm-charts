@@ -4,6 +4,21 @@ entries:
   - annotations:
       artifacthub.io/changes: |
         - kind: fixed
+          description: "Update SubScraper repository and version"
+    apiVersion: v2
+    appVersion: 1.0.13
+    created: "2026-09-17T10:41:35.034221409Z"
+    description: 'SubScraper: scheduled OnlyFans downloader, run as a Kubernetes CronJob.
+      Previously OF-DL'
+    digest: 1fef9e5d97ffc01a26e1763763aee1b868c798770acf3fe453265dc7e6656a21
+    name: of-dl
+    type: application
+    urls:
+    - https://github.com/swuuper/helm-charts/releases/download/of-dl-0.1.2/of-dl-0.1.2.tgz
+    version: 0.1.2
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: fixed
           description: "Configuration for OF-DL to work again"
     apiVersion: v2
     appVersion: 1.10.6
@@ -289,4 +304,4 @@ entries:
     urls:
     - https://github.com/swuuper/helm-charts/releases/download/stash-box-0.1.0/stash-box-0.1.0.tgz
     version: 0.1.0
-generated: "2026-09-14T11:34:39.762348756Z"
+generated: "2026-09-17T10:41:35.034341928Z"
