@@ -106,11 +106,14 @@ rules:
 # sections of the config.conf that ships inside the image; keys are written out
 # verbatim, so any option the app supports can be set here without a chart change.
 config:
-  Site:
-    Name: "OnlyFans"
-    BaseUrl: "https://onlyfans.com"
-    ApiPath: "/api2/v2"
-    DrmCdnHost: "cdn2.onlyfans.com"
+  Site: null
+    ActiveProfile: "OnlyFans"
+    Profiles:
+      OnlyFans: 
+      BaseUrl: "https://onlyfans.com"
+      ApiPath: "/api2/v2"
+      DrmCdnHost: "cdn2.onlyfans.com"
+      SiteType: "feather"
   External:
     FFmpegPath: ""
   Download:
